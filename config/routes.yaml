@@ -1,5 +1,8 @@
-controllers:
+api:
     resource:
-        path: ../src/Controller/
+        path: ../src/Controller
         namespace: App\Controller
     type: attribute
+    prefix: /api
+    name_prefix: api_
+    trailing_slash_on_root: false
