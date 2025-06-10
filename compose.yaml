@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
@@ -6,14 +6,27 @@ services:
     container_name: mysql_container
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "metricaloDB"
-      MYSQL_USER: "metUser"
-      MYSQL_PASSWORD: "user"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: metricaloDB
+      MYSQL_USER: metUser
+      MYSQL_PASSWORD: user
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: symfony_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:cached
+    environment:
+      DATABASE_URL: "mysql://metUser:user@mysql_container:3306/metricaloDB"
+    depends_on:
+      - mysql
 
 volumes:
   mysql_data:

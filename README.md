@@ -12,7 +12,6 @@ docker-compose up -d --build
 compser install (or docker-compose exec php composer install)
 php php bin/console doctrine:migrations:migrate
 
-php -S localhost:8000 -t /public
 ```
-
+open http://localhost:8000/api/doc
 ## Happy cooode 
