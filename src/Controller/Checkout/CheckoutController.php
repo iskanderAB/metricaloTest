@@ -8,7 +8,9 @@ use App\Http\Request\RequestDecodeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 
 final class CheckoutController extends AbstractController
@@ -19,7 +21,67 @@ final class CheckoutController extends AbstractController
         private ResponseEncoder $encoder,
         private Interactor $interactor,
     ){}
-    #[OA\Tag(name: 'User')]
+    #[OA\Tag(name: 'Checkout')]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['card_number', 'exp_month', 'exp_year', 'cvv', 'amount', 'currency'],
+            properties: [
+                new OA\Property(
+                    property: 'card_number',
+                    description: 'Card number',
+                    type: 'string',
+                    example: '4242424242424242'
+                ),
+                new OA\Property(
+                    property: 'card_exp_month',
+                    description: 'Expiration month',
+                    type: 'string',
+                    example: '01'
+                ),
+                new OA\Property(
+                    property: 'card_exp_year',
+                    description: 'Expiration year',
+                    type: 'string',
+                    example: '2026'
+                ),
+                new OA\Property(
+                    property: 'card_cvv',
+                    description: 'Card CVV',
+                    type: 'integer',
+                    example: 463
+                ),
+                new OA\Property(
+                    property: 'amount',
+                    description: 'Payment amount',
+                    type: 'integer',
+                    example: 4000
+                ),
+                new OA\Property(
+                    property: 'currency',
+                    description: 'Currency code',
+                    type: 'string',
+                    example: 'EUR'
+                ),
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: Response::HTTP_OK,
+        description: 'Business logic was executed',
+        content: new OA\JsonContent(ref: new Model(type: Dto\CheckoutResponse::class)),
+    )]
+    #[OA\Parameter(
+        name: 'getaway',
+        description: 'Payment getaway provider',
+        in: 'path',
+        required: true,
+        schema: new OA\Schema(
+            type: 'string',
+            default: 'shift4'
+        )
+    )]
     #[Route('/v1/checkout/{getaway}', name: 'app_checkout_v1', methods: 'POST')]
     public function checkoutV1(Request $request, string $getaway): JsonResponse
     {
